@@ -1,0 +1,214 @@
+#!/bin/bash
+#
+# arago GmbH start-stop connect-email-connector
+#
+# chkconfig: 35 92 8
+# description: arago GmbH start-stop connect-email-connector
+#
+# error result code table
+# 0 success
+# 1 general error
+# 2 wrong user input
+# 3 process start failed
+# 4 termination failed
+# 5 process already running
+# 6 process not running
+# 7 process died
+
+### BEGIN INIT INFO
+# Provides: connect-email-connector
+# Required-Start: $network
+# Required-Stop:
+# Should-Start: graphit-server
+# Should-Stop: graphit-server
+# Default-Start: 3 5
+# Default-Stop: 0 1 2 6
+# Short-Description: start and stop connect-email-connector
+# Description: arago GmbH  connect-email-connector
+### END INIT INFO
+
+umask 022
+PROC_NAME=$(basename $(readlink -f $0))
+RUN_USER=root
+
+. /etc/init.d/functions
+
+
+BASE_DIR=/opt/autopilot/connectit/emailconnector/
+
+# Framework and BMC only
+CONFIG_SUFFIX="$BASE_DIR/conf/exlistener.properties"
+
+
+# Framework only
+#CREATE_TRUST_STORE=1
+
+# Service now only
+#PATH_TO_LOGCONF=
+#PATH_TO_LOG4JCONF="$BASE_DIR/conf/RESTApiIncident.log4j.properties"
+#if [ -n "$PATH_TO_LOG4JCONF" -a ! -e "$PATH_TO_LOG4JCONF" ]; then
+#    LOG4JCONF_TPL=/opt/autopilot/connectit/conf/connectit.log4j.properties.tpl
+#    if [ -r $LOG4JCONF_TPL ]; then#
+#	sed "s=_PROC_NAME_=${PROC_NAME}=" $LOG4JCONF_TPL > $PATH_TO_LOG4JCONF
+#	chown $RUN_USER $PATH_TO_LOG4JCONF
+#    else
+#	echo "Both $PATH_TO_LOG4JCONF and $LOG4JCONF_TPL are missing. cannot continue"
+#	exit 1
+#   fi
+#fi
+
+# list of locations of jars passed to the JRE
+JAR_LIBS="$BASE_DIR/lib/EmailConnector-jar-with-dependencies.jar"
+
+JAR_LNCH="-jar"
+CMD_PREFIX="cd $BASE_DIR;"
+SLEEPTIME=0
+
+LOG_DIR=/var/log/autopilot/connectit
+PID_DIR=/var/run/hiro-connect
+
+PIDFILE=$PID_DIR/${PROC_NAME}.pid
+
+SET_ENV_FILE=/opt/autopilot/etc/set_java_env.sh
+if [ -r $SET_ENV_FILE ]; then
+    . $SET_ENV_FILE
+else
+    JAVA_BIN=java
+fi
+
+if [ -r /opt/autopilot/etc/startup_env.sh ]; then
+    . /opt/autopilot/etc/startup_env.sh
+fi
+
+
+#JAVA_OPTS="-Dfile.encoding=UTF-8"
+#[ -n "$PATH_TO_LOGCONF" ] && JAVA_OPTS="$JAVA_OPTS -Dlogging.config=file:$PATH_TO_LOGCONF"
+#[ -n "$PATH_TO_LOG4JCONF" ] && JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file://$PATH_TO_LOG4JCONF -Dhazelcast.logging.type=log4j"
+
+find_pid() {
+	PID=$(pgrep -u $RUN_USER -f "^$JAVA_BIN.*$JAR_LIBS.*$CONFIG_SUFFIX")
+}
+
+# create truststore
+#create_truststore() {
+#	TRUST_STORE_PATH=/opt/autopilot/connectit/conf/ConnectIT.${PROC_NAME}.jks
+#	TRUST_STORE_SECRET=cit$$abc
+
+#	if [ -x "/opt/autopilot/setup/helpers/initialize_keystore" ]; then
+#	    /opt/autopilot/setup/helpers/initialize_keystore $TRUST_STORE_PATH $TRUST_STORE_SECRET
+#	    TRUST_OPTS="-Djavax.net.ssl.trustStore=$TRUST_STORE_PATH -Djavax.net.ssl.trustStorePassword=$TRUST_STORE_SECRET"
+#	    chown $RUN_USER:arago $TRUST_STORE_PATH
+#	fi
+#}
+
+start() {
+	[ ! -d $LOG_DIR ] && {
+		mkdir -p $LOG_DIR
+		chown -R $RUN_USER. $LOG_DIR
+		}
+	[ ! -d $PID_DIR ] && mkdir -p $PID_DIR
+	chown $RUN_USER:arago $PID_DIR $PID_DIR
+
+    if [ -z "$PID" ]; then
+		[ -e $PIDFILE ] && echo "Warning: Pidfile already exists - restarting $PROC_NAME"
+
+		#[ $CREATE_TRUST_STORE -eq 1 ] && create_truststore
+		
+    CMDLINE="$CMD_PREFIX $JAVA_BIN $JAR_LNCH $JAR_LIBS $CONFIG_SUFFIX" 
+		
+		#CMDLINE="$CMD_PREFIX $JAVA_BIN $JAVA_OPTS $TRUST_OPTS $JAR_LNCH $JAR_LIBS $CONFIG_SUFFIX"
+		
+    		if [ "$RUN_USER" != "root" ]; then
+			daemon --user $RUN_USER $CMDLINE &>> /dev/null &
+		else
+			daemon $CMDLINE &>> /dev/null &
+		fi
+
+		unset TRIES; while ! find_pid; do
+			let TRIES++
+			sleep 0.5
+			[ $TRIES -gt 10 ] && break
+		done
+
+		if [ -n "$PID" ]; then
+			echo $PID > $PIDFILE
+			chown $RUN_USER:arago $PIDFILE
+			echo "$PROC_NAME started with PID $PID"
+			return 0
+		else
+			echo "$PROC_NAME start failed"
+			return 3
+		fi
+    else
+		echo "$PROC_NAME already running with PID $PID"
+		return 5
+    fi
+}
+
+stop(){
+
+    if [ -n "$PID" ]; then
+	kill $PID &> /dev/null && {
+		[ -f $PIDFILE ] && rm $PIDFILE
+			echo "$PROC_NAME stopped."
+			unset PID
+			return 0
+		} || {
+			echo "Stopping $PROC_NAME failed"
+			return 4
+		}
+    else
+	if [ -e $PIDFILE ]; then
+		echo "Pidfile exist, $PROC_NAME died?"
+		return 7
+	else
+		echo "$PROC_NAME not running"
+		return 6
+	fi
+    fi
+}
+
+status() {
+
+    if [ -n "$PID" ]; then
+	echo "$PROC_NAME running with PID $PID"
+	return 0
+    else
+	if [ -e $PIDFILE ]; then
+		echo "Pidfile exists - $PROC_NAME died?"
+		return 7
+	else
+		echo "$PROC_NAME not running"
+		return 6
+	fi
+    fi
+}
+
+# See how we were called.
+find_pid
+case "$1" in
+    start)
+	start
+	RETVAL=$?
+	;;
+    stop)
+	stop
+	RETVAL=$?
+	;;
+    status)
+	status
+	RETVAL=$?
+	;;
+    restart)
+	stop
+	[ $SLEEPTIME -gt 5 ] && echo "sleeping for $SLEEPTIME seconds ..."
+	sleep $SLEEPTIME
+	start
+	RETVAL=$?
+        ;;
+    *)
+	echo $"Usage: $0 {start|stop|status|restart}"
+	RETVAL=1
+esac
+
+exit $RETVAL

@@ -1,0 +1,158 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>arago</groupId>
+  <artifactId>ews_exchange</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <packaging>jar</packaging>
+  <name>ews_exchange</name>
+  <url>http://maven.apache.org</url>
+<repositories> <repository> <id>maven-restlet</id> <name>Restlet repository</name> <url>https://maven.restlet.com</url> </repository> </repositories>
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+ <restlet-version>2.3.7</restlet-version>
+  <maven.test.skip>true</maven.test.skip>
+  </properties>
+
+  <dependencies>
+  <dependency> <groupId>org.restlet.jse</groupId> <artifactId>org.restlet</artifactId> <version>${restlet-version}</version> </dependency> <dependency> <groupId>org.restlet.jse</groupId> <artifactId>org.restlet.ext.jackson</artifactId> <version>${restlet-version}</version> </dependency>
+
+<dependency>
+  <groupId>org.restlet</groupId>
+  <artifactId>org.restlet.ext.json</artifactId>
+  <version>1.0.11</version>
+</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    <groupId>com.microsoft.ews-java-api</groupId>
+    <artifactId>ews-java-api</artifactId>
+    <version>2.0</version>
+	</dependency>
+	
+	<dependency>
+	<groupId>org.json</groupId>
+	<artifactId>json</artifactId>
+	<version>20090211</version>
+	</dependency>
+
+<dependency>
+    <groupId>com.squareup.okhttp3</groupId>
+    <artifactId>okhttp</artifactId>
+    <version>3.8.1</version>
+</dependency>
+
+<dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-log4j12</artifactId>
+    	<version>1.7.2</version>
+    </dependency>
+ 
+    
+	<dependency>
+    <groupId>org.restlet.jee</groupId>
+    <artifactId>org.restlet.ext.slf4j</artifactId>
+    <version>2.3.10</version>
+	</dependency>
+
+
+  </dependencies>
+  	<build>
+
+  	     <finalName>EmailConnector</finalName>
+    <plugins>
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.2</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+	    <manifest>
+	      <mainClass>de.arago.ews_exchange.app.EmailExchangeConnector</mainClass>
+	    </manifest>
+	  </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+   	<plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>rpm-maven-plugin</artifactId>
+          <version>2.1.5</version>
+          <executions>
+          <execution>
+          <id>generate-rpm</id>
+          <goals>
+          <goal>rpm</goal>
+          </goals>
+          </execution>
+          </executions>
+          <configuration>
+        	  <username>graphit</username>
+              <groupname>graphit</groupname>
+            <needarch>noarch</needarch>
+          	 <targetOS>linux</targetOS>
+         	 <license>MIT (c) 2017 arago GmbH</license>
+           <group>hiro-connect</group>
+           <mappings>
+           <mapping>
+           <directory>/opt/autopilot/connectit/emailconnector/lib/</directory>
+           <artifact/>      
+           </mapping>
+           <mapping>
+              <directory>/opt/autopilot/connectit/emailconnector/conf/</directory>
+              <configuration>true</configuration>
+              <filemode>640</filemode>
+              <username>graphit</username>
+              <groupname>graphit</groupname>
+              <sources>
+                <source>
+                  <location>src/main/conf</location>
+                </source>
+              </sources>
+            </mapping>
+             <mapping>
+               <directory>/etc/init.d/</directory> 
+              <directoryIncluded>false</directoryIncluded>
+              <filemode>755</filemode>
+              <username>root</username>
+              <groupname>root</groupname>
+              <sources>
+                <source>
+                  <location>src/main/scripts/connect-email-connector</location>
+                </source>
+
+              </sources>
+            </mapping>
+           </mappings>
+      		 </configuration>
+          <extensions>true</extensions>
+          </plugin>
+    </plugins>
+
+	</build>
+  
+</project>
