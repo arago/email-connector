@@ -46,9 +46,6 @@ public class ExchangeChecker {
 		 this.password = password;
 		 this.email = email; 
 		 this.service = ServiceFactory.getService();
-		// this.service = new ExchangeService(eV);
-		// ExchangeCredentials credentials = new WebCredentials(email, password);
-		 //this.service.setCredentials(credentials);
 		this.service.setUrl(new java.net.URI(uri)); 
 
 	}

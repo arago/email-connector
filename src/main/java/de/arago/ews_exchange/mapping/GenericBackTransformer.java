@@ -181,7 +181,6 @@ public class GenericBackTransformer implements MessageBackTransformer{
 	}
 	
 	private void mappInnerJSON(Object o, Map<String,List<String>> messageMap) throws JSONException {
-		//Map<String,List<String>> messageNewMap  = new HashMap<>(); 
 		
 		
 		JSONObject innerJo = (JSONObject) o; 
@@ -213,7 +212,6 @@ public class GenericBackTransformer implements MessageBackTransformer{
 			 }
 			
 			 subSDFs.add(rs); 
-			//log.trace(""+generalMessageMap);
 		 }
 	}
 	
@@ -290,7 +288,6 @@ public class GenericBackTransformer implements MessageBackTransformer{
 			
 				if(mM != null && mM.containsKey(sdfKey)){
 					List<String> l = mM.get(sdfKey); 
-					//TODO: build in list strategy 
 					
 					for(String v : l){
 						if(message!=""){
@@ -341,7 +338,6 @@ public class GenericBackTransformer implements MessageBackTransformer{
 			}
 				else{
 						mappValue(name, jRet, mo, sdfValue);
-						//jRet.put(name, sdfValue);
 					 
 					return jRet; 
 				}

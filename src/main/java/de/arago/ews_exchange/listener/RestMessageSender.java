@@ -25,7 +25,6 @@ public class RestMessageSender implements MessageSender{
 	public RestMessageSender(OkHttpClient client, Map<String,String> confMap) {
 		this.client = client; 
 
-//		client.setRetryOnConnectionFailure(true);
 
 		connectURL = confMap.get("connectURL"); 
 		connectPort = confMap.get("connectPort");

@@ -33,7 +33,6 @@ public class RestletResource extends ServerResource {
 	public static void setPropFileName(String propFile){
 		propFileName = propFile; 
 		
-		//setChallengeResponse(ChallengeScheme.HTTP_BASIC, "login", "secret");
 		
 
 		

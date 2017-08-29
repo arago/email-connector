@@ -41,13 +41,7 @@ public class ExchangeSender implements MessageBackSender {
 
 	public boolean sendMessage(String message) {
 		 System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
-			
-//		 Properties systemProperties = System.getProperties();
-//         systemProperties.setProperty("https.proxyHost","172.27.210.11");
-//          systemProperties.setProperty("https.proxyPort","8888");
-//          systemProperties.setProperty("http.proxyHost","172.27.210.11");
-//          systemProperties.setProperty("http.proxyPort","8888");
-//          systemProperties.setProperty("nonProxyHosts", "localhost"); 
+		
 		service = ServiceFactory.getService(); 
 		
 		

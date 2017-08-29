@@ -383,7 +383,6 @@ private void addSubSdfToSDF(JSONObject jo, MappingObject mo, JSONObject value){
 
 	private void mapSubSDF(JSONObject jo, String combinedKey, JSONArray ja, int i) throws JSONException {
 		JSONObject newJo =(JSONObject) ja.getJSONObject(i);
-		//TODO: sure this must be a subsdf? 
 		if(mappingMap.containsKey(combinedKey.substring(1))){
 			MappingObject smo = mappingMap.get(combinedKey.substring(1));
 			JSONObject subSDFJO = new JSONObject(); 
@@ -419,11 +418,9 @@ private void addSubSdfToSDF(JSONObject jo, MappingObject mo, JSONObject value){
 			
 			
 			
-			//TODO: add subsdf 
 			
 			
 		}else{
-			//TODO: is this ever happening??? 
 		}
 	}
 
@@ -435,12 +432,7 @@ private void addSubSdfToSDF(JSONObject jo, MappingObject mo, JSONObject value){
 				String key = dmo.getSdfAttributeName(); 
 				
 				if(dVal!=null){
-					       //try {
 					        	mappValue(jo,dmo,dVal); 
-							//	jo.put(key, dVal);
-							//} catch (JSONException e) {
-							//	e.printStackTrace();
-							//} 
 				}
 			}
 		}

@@ -28,12 +28,11 @@ public class ExchangeChatter {
 		; 
 		EmailMessage emailMessage = new EmailMessage(service);
 		emailMessage.setSubject("Question ");
-		//<html><body><form ><input type='text' name='testVar' value='yes'/>   </form></body></html>
 		MessageBody mB = MessageBody.getMessageBodyFromText("hi");
 		mB.setBodyType(BodyType.Text);
 		emailMessage.setBody(mB);
 
-		emailMessage.getToRecipients().add("ppelchmann@arago.de");
+	//	emailMessage.getToRecipients().add("@arago.de");
 		
 	
 		
@@ -41,25 +40,12 @@ public class ExchangeChatter {
 	//	
 		
 		ItemId id = emailMessage.getId(); 
-//		UUID yourPropertySetId = UUID.fromString("01638372-9F96-43b2-A403-B504ED14A910");
-//		ExtendedPropertyDefinition extendedPropertyDefinition = new ExtendedPropertyDefinition(
-//			    yourPropertySetId, "myUIDprop", MapiPropertyType.String);
-//
-//			// Stamp the extended property on a message.
-//		emailMessage.setExtendedProperty(extendedPropertyDefinition, "myUID");
+
 		emailMessage.setIsResponseRequested(true);
-//			// Save the message.
 		emailMessage.save();
 
 		
 
-//		ResponseMessage responseMessage = emailMessage.createReply(true);
-//		
-////		ResponseMessage responseMessage = new ResponseMessage(emailMessage, ResponseMessageType.Reply); 
-//		MessageBody mB = new MessageBody("response");
-//		responseMessage.setSubject("MyAnswer" );
-//		responseMessage.setBody(mB);
-//		responseMessage.setBodyPrefix(mB);
 		emailMessage.load();
 		
 		id = emailMessage.getId(); 
