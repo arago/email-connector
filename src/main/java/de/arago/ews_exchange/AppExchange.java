@@ -7,7 +7,6 @@ public class AppExchange
 {
     public static void main( String[] args ) throws Exception 
     {	
-    	//TODO check prop file name
     	Map<String,String> conMap = PropertiesReader.getConfMap("exlistenerJSON.properties"); 
     	String email = conMap.get("email");
 		String pw = conMap.get("password");

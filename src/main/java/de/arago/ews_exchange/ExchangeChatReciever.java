@@ -26,7 +26,6 @@ public class ExchangeChatReciever {
 	
 	public static void main(String[] args ){
 		ServiceFactory sF = new ServiceFactory(); 
-		//TODO: check propfilename
 		Map<String,String> confMap = PropertiesReader.getConfMap(null); 
 		sF.init(confMap);
 		service = ServiceFactory.getService(); 
