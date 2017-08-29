@@ -2,6 +2,8 @@
 
 # Usage
 
+You find a detailed description of how to use and configure the email connector on  https://github.com/arago/email-connector/wiki
+
 ## Start
 Start the program with
 
